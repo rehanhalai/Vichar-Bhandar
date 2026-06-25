@@ -81,7 +81,7 @@ export async function deleteReminder(id: string) {
 export async function getAllReminders(filters?: {
   completed?: boolean;
   categoryId?: string;
-}) {
+}, _t?: number) {
   const conditions = [];
   if (filters?.completed !== undefined) {
     conditions.push(eq(reminders.isCompleted, filters.completed ? 1 : 0));
@@ -99,7 +99,7 @@ export async function getAllReminders(filters?: {
   });
 }
 
-export async function getUpcomingReminders(limit = 5) {
+export async function getUpcomingReminders(limit: number = 5, _t?: number) {
   return db.query.reminders.findMany({
     where: eq(reminders.isCompleted, 0),
     orderBy: [asc(reminders.dueDate), desc(reminders.priority)],

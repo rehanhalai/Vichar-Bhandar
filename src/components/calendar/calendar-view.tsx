@@ -36,13 +36,13 @@ export function CalendarView({
   
   const { data: thoughts = initialThoughts } = useQuery({
     queryKey: ['thoughts'],
-    queryFn: () => getAllThoughts(),
+    queryFn: () => getAllThoughts(undefined, Date.now()),
     initialData: initialThoughts,
   })
 
   const { data: reminders = initialReminders } = useQuery({
     queryKey: ['reminders'],
-    queryFn: () => getAllReminders(),
+    queryFn: () => getAllReminders(undefined, Date.now()),
     initialData: initialReminders,
   })
 

@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { CategorySelector } from "@/components/categories/category-selector"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 
@@ -27,6 +28,7 @@ export type Reminder = {
   dueAt: Date
   dueTime?: string
   category?: string
+  categoryId?: string | null
   completed: boolean
 }
 
@@ -55,14 +57,17 @@ function getUrgency(task: Reminder): { label: string; className: string } {
 export default function RemindersView({ reminders, onToggleComplete, onAddClick, onEditClick }: RemindersViewProps) {
   const [view, setView] = useState<"calendar" | "timeline">("calendar")
   const [filter, setFilter] = useState<"pending" | "completed" | "all">("pending")
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [currentMonth, setCurrentMonth] = useState(new Date())
 
-  const filtered = reminders.filter(r =>
-    filter === "all"       ? true :
-    filter === "pending"   ? !r.completed :
-    r.completed
-  )
+  const filtered = reminders.filter(r => {
+    const statusMatch = filter === "all" ? true :
+                        filter === "pending" ? !r.completed :
+                        r.completed
+    const categoryMatch = categoryFilter ? r.categoryId === categoryFilter : true
+    return statusMatch && categoryMatch
+  })
 
   // Calendar setup
   const monthStart = startOfMonth(currentMonth)
@@ -88,13 +93,18 @@ export default function RemindersView({ reminders, onToggleComplete, onAddClick,
     <div className="flex flex-col gap-4">
       {/* TOP BAR */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <Tabs value={filter} onValueChange={(v) => setFilter(v as any)} className="w-full sm:w-auto">
-          <TabsList className="grid w-full grid-cols-3 sm:flex sm:w-auto">
-            <TabsTrigger value="pending">Pending</TabsTrigger>
-            <TabsTrigger value="completed">Completed</TabsTrigger>
-            <TabsTrigger value="all">All</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <Tabs value={filter} onValueChange={(v) => setFilter(v as any)} className="w-full sm:w-auto">
+            <TabsList className="grid w-full grid-cols-3 sm:flex sm:w-auto">
+              <TabsTrigger value="pending">Pending</TabsTrigger>
+              <TabsTrigger value="completed">Completed</TabsTrigger>
+              <TabsTrigger value="all">All</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <div className="w-full sm:w-[200px]">
+            <CategorySelector value={categoryFilter} onChange={setCategoryFilter} />
+          </div>
+        </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
           <div className="flex gap-2">

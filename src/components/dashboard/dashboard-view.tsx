@@ -12,13 +12,13 @@ import { UpcomingReminders } from "@/components/dashboard/upcoming-reminders"
 export function DashboardView({ initialThoughts, initialReminders }: any) {
   const { data: thoughts = initialThoughts } = useQuery({
     queryKey: ['thoughts'],
-    queryFn: () => getAllThoughts(),
+    queryFn: () => getAllThoughts(undefined, Date.now()),
     initialData: initialThoughts,
   })
 
   const { data: reminders = initialReminders } = useQuery({
     queryKey: ['upcoming-reminders'],
-    queryFn: () => getUpcomingReminders(5),
+    queryFn: () => getUpcomingReminders(5, Date.now()),
     initialData: initialReminders,
   })
 

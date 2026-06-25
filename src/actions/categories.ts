@@ -23,6 +23,6 @@ export async function deleteCategory(id: string) {
   revalidatePath("/");
 }
 
-export async function getAllCategories() {
+export async function getAllCategories(_t?: number) {
   return db.select().from(categories);
 }

@@ -33,7 +33,14 @@ export function RecentThoughts({ thoughts }: { thoughts: Thought[] }) {
         <CardTitle className="text-sm font-medium">Recent Thoughts</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {thoughts.slice(0, 5).map((thought) => (
+        {[...thoughts]
+          .sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
+            return dateB - dateA
+          })
+          .slice(0, 5)
+          .map((thought) => (
           <div key={thought.id} className="group border-b border-border/50 pb-3 last:border-0 last:pb-0">
             <p className="text-sm leading-relaxed line-clamp-2">{thought.body}</p>
             <div className="flex items-center gap-2 mt-1">

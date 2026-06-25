@@ -70,7 +70,7 @@ export async function deleteThought(id: string) {
   revalidatePath("/");
 }
 
-export async function getAllThoughts(filters?: { search?: string; categoryId?: string; tag?: string }) {
+export async function getAllThoughts(filters?: { search?: string; categoryId?: string; tag?: string }, _t?: number) {
   let whereClause = undefined;
   
   // If we need to filter by search
