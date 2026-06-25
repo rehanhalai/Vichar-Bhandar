@@ -9,9 +9,10 @@ export const dynamic = 'force-dynamic'; // Prevent Vercel from caching the cron 
 export async function GET(request: Request) {
   // Security check: Vercel sends a specific header when triggering crons securely
   const authHeader = request.headers.get('authorization');
+  const secret = process.env.CRON_SECRET || process.env.VERCEL_CRON_SECRET;
   if (
-    process.env.VERCEL_CRON_SECRET && 
-    authHeader !== `Bearer ${process.env.VERCEL_CRON_SECRET}`
+    secret && 
+    authHeader !== `Bearer ${secret}`
   ) {
     return new NextResponse('Unauthorized', { status: 401 });
   }
