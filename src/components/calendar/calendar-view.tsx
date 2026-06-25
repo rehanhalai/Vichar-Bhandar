@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Calendar } from "@/components/ui/calendar"
 import { format, parseISO, isSameDay } from "date-fns"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { createThought } from "@/actions/thoughts"
+import { createThought, getAllThoughts } from "@/actions/thoughts"
+import { getAllReminders } from "@/actions/reminders"
 import { Brain, Plus } from "lucide-react"
 
 interface Thought {
@@ -30,33 +32,48 @@ export function CalendarView({
   initialThoughts: Thought[]
   initialReminders: Reminder[]
 }) {
+  const queryClient = useQueryClient()
+  
+  const { data: thoughts = initialThoughts } = useQuery({
+    queryKey: ['thoughts'],
+    queryFn: () => getAllThoughts(),
+    initialData: initialThoughts,
+  })
+
+  const { data: reminders = initialReminders } = useQuery({
+    queryKey: ['reminders'],
+    queryFn: () => getAllReminders(),
+    initialData: initialReminders,
+  })
+
   const [selected, setSelected] = useState<Date>(new Date())
-  const [thoughts, setThoughts] = useState<Thought[]>(initialThoughts)
   const [newThought, setNewThought] = useState("")
 
-  const thoughtDates = thoughts.map(t => parseISO(t.date))
-  const reminderDates = initialReminders
-    .filter(r => r.dueDate && !r.isCompleted)
-    .map(r => parseISO(r.dueDate!))
+  const thoughtDates = thoughts.map((t: any) => parseISO(t.date))
+  const reminderDates = reminders
+    .filter((r: any) => r.dueDate && !r.isCompleted)
+    .map((r: any) => parseISO(r.dueDate!))
 
-  const selectedThoughts = thoughts.filter(t => isSameDay(parseISO(t.date), selected))
-  const selectedReminders = initialReminders.filter(
-    r => r.dueDate && isSameDay(parseISO(r.dueDate), selected) && !r.isCompleted
+  const selectedThoughts = thoughts.filter((t: any) => isSameDay(parseISO(t.date), selected))
+  const selectedReminders = reminders.filter(
+    (r: any) => r.dueDate && isSameDay(parseISO(r.dueDate), selected) && !r.isCompleted
   )
 
-  const handleAddThought = async () => {
+  const createMutation = useMutation({
+    mutationFn: createThought,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['thoughts'] })
+      setNewThought("")
+    }
+  })
+
+  const handleAddThought = () => {
     if (!newThought.trim()) return
-    await createThought({
+    createMutation.mutate({
       body: newThought,
       date: format(selected, "yyyy-MM-dd"),
       tags: [],
     })
-    setNewThought("")
-    setThoughts(prev => [...prev, {
-      id: crypto.randomUUID(),
-      body: newThought,
-      date: format(selected, "yyyy-MM-dd"),
-    }])
   }
 
   const modifiers = {
@@ -108,7 +125,7 @@ export function CalendarView({
                 onChange={(e) => setNewThought(e.target.value)}
                 className="min-h-[60px] resize-none text-sm"
               />
-              <Button onClick={handleAddThought} disabled={!newThought.trim()} size="icon" className="shrink-0">
+              <Button onClick={handleAddThought} disabled={!newThought.trim() || createMutation.isPending} size="icon" className="shrink-0">
                 <Plus className="size-4" />
               </Button>
             </div>

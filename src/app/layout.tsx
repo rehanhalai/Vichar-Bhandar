@@ -9,6 +9,7 @@ import { NotificationScheduler } from "@/components/shared/notification-schedule
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { JetBrains_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { Providers } from "@/components/providers";
 
 const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
 
@@ -45,8 +46,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <TooltipProvider>
+        <Providers>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+            <TooltipProvider>
             <SidebarProvider
               style={
                 {
@@ -66,6 +68,7 @@ export default function RootLayout({
             </SidebarProvider>
           </TooltipProvider>
         </ThemeProvider>
+      </Providers>
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, startTransition } from "react"
+import { useState } from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
@@ -18,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { toggleReminder, createReminder, updateReminder } from "@/actions/reminders"
+import { toggleReminder, createReminder, updateReminder, getAllReminders } from "@/actions/reminders"
 import RemindersView, { Priority, Reminder as ViewReminder } from "./reminders-view"
 import { parseISO } from "date-fns"
 
@@ -62,61 +63,77 @@ const priorityMap: Record<number, Priority> = {
 }
 
 export function RemindersList({ initialReminders }: { initialReminders: DBReminder[] }) {
-  const [reminders, setReminders] = useState<DBReminder[]>(initialReminders)
+  const queryClient = useQueryClient()
+  
+  const { data: reminders = initialReminders } = useQuery({
+    queryKey: ['reminders'],
+    queryFn: () => getAllReminders(),
+    initialData: initialReminders,
+  })
+
   const [editing, setEditing] = useState<DBReminder | null>(null)
   const [form, setForm] = useState<ReminderFormData>(emptyForm)
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const handleSave = async () => {
+  const createMutation = useMutation({
+    mutationFn: createReminder,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reminders'] })
+      setDialogOpen(false)
+    }
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Parameters<typeof updateReminder>[1] }) => updateReminder(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reminders'] })
+      setDialogOpen(false)
+    }
+  })
+
+  const toggleMutation = useMutation({
+    mutationFn: toggleReminder,
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ['reminders'] })
+      const previous = queryClient.getQueryData<DBReminder[]>(['reminders'])
+      if (previous) {
+        queryClient.setQueryData<DBReminder[]>(['reminders'], prev => 
+          prev?.map(r => r.id === id ? { ...r, isCompleted: r.isCompleted ? 0 : 1 } : r)
+        )
+      }
+      return { previous }
+    },
+    onError: (err, id, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['reminders'], context.previous)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['reminders'] })
+    }
+  })
+
+  const handleSave = () => {
     if (!form.title.trim()) return
 
-    if (editing) {
-      await updateReminder(editing.id, {
-        title: form.title,
-        description: form.description || null,
-        startDate: form.startDate || null,
-        dueDate: form.dueDate || null,
-        dueTime: form.dueTime || null,
-        priority: parseInt(form.priority),
-      })
-      setReminders(prev => prev.map(r =>
-        r.id === editing.id
-          ? { ...r, title: form.title, description: form.description || null, startDate: form.startDate || null, dueDate: form.dueDate || null, dueTime: form.dueTime || null, priority: parseInt(form.priority) }
-          : r
-      ))
-    } else {
-      const id = await createReminder({
-        title: form.title,
-        description: form.description || null,
-        startDate: form.startDate || null,
-        dueDate: form.dueDate || null,
-        dueTime: form.dueTime || null,
-        priority: parseInt(form.priority),
-      })
-      setReminders(prev => [...prev, {
-        id,
-        title: form.title,
-        description: form.description || null,
-        startDate: form.startDate || null,
-        dueDate: form.dueDate || null,
-        dueTime: form.dueTime || null,
-        priority: parseInt(form.priority),
-        isCompleted: 0,
-        createdAt: new Date()
-      }])
+    const data = {
+      title: form.title,
+      description: form.description || null,
+      startDate: form.startDate || null,
+      dueDate: form.dueDate || null,
+      dueTime: form.dueTime || null,
+      priority: parseInt(form.priority),
     }
 
-    setDialogOpen(false)
+    if (editing) {
+      updateMutation.mutate({ id: editing.id, data })
+    } else {
+      createMutation.mutate(data)
+    }
   }
 
-  const handleToggle = async (id: string, completed: boolean) => {
-    startTransition(async () => {
-      const updated = reminders.map(r =>
-        r.id === id ? { ...r, isCompleted: completed ? 1 : 0 } : r
-      )
-      setReminders(updated)
-      await toggleReminder(id)
-    })
+  const handleToggle = (id: string, completed: boolean) => {
+    toggleMutation.mutate(id)
   }
 
   const handleAddClick = () => {
@@ -234,7 +251,11 @@ export function RemindersList({ initialReminders }: { initialReminders: DBRemind
                 </Select>
               </div>
             </div>
-            <Button onClick={handleSave} className="w-full" disabled={!form.title.trim()}>
+            <Button 
+              onClick={handleSave} 
+              className="w-full" 
+              disabled={!form.title.trim() || createMutation.isPending || updateMutation.isPending}
+            >
               {editing ? "Update" : "Create"}
             </Button>
           </div>

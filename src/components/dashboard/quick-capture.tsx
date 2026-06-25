@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardDescription, CardAction } from "@/components/ui/card"
@@ -10,6 +11,7 @@ import { format } from "date-fns"
 import { Send, Sparkles } from "lucide-react"
 
 export function QuickCapture() {
+  const queryClient = useQueryClient()
   const [body, setBody] = useState("")
   const [focused, setFocused] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -40,15 +42,23 @@ export function QuickCapture() {
     return () => clearTimeout(timer)
   }, [body])
 
-  const handleSave = async () => {
+  const createMutation = useMutation({
+    mutationFn: createThought,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['thoughts'] })
+      setBody("")
+      setFocused(false)
+      upsertDraft("") // clear draft
+    }
+  })
+
+  const handleSave = () => {
     if (!body.trim()) return
-    await createThought({
+    createMutation.mutate({
       body,
       date: format(new Date(), "yyyy-MM-dd"),
       tags: [],
     })
-    setBody("")
-    setFocused(false)
   }
 
   return (
@@ -75,7 +85,7 @@ export function QuickCapture() {
           className="min-h-[100px] resize-none border-none focus-visible:ring-0 shadow-none p-0 text-base"
         />
         <div className="flex justify-end mt-3">
-          <Button onClick={handleSave} disabled={!body.trim()} size="sm">
+          <Button onClick={handleSave} disabled={!body.trim() || createMutation.isPending} size="sm">
             <Send className="size-4 mr-1" />
             Save
           </Button>
