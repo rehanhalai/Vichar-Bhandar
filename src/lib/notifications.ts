@@ -29,7 +29,7 @@ export function scheduleDailyReminder(hour: number, minute: number) {
 
   const msUntilTarget = target.getTime() - now.getTime()
   setTimeout(() => {
-    showNotification("ThoughtDump", "Time to dump your !thoughts")
+    showNotification("Vichar Bhandar", "Time to dump your !thoughts")
     scheduleDailyReminder(hour, minute)
   }, msUntilTarget)
 }

@@ -25,7 +25,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Vichar no Bhandar",
+  title: "Vichar Bhandar",
   description: "Personal thought dumper",
 };
 
