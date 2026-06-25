@@ -35,7 +35,7 @@ export function QuickCapture() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[600px] border-black/10 dark:border-white/10">
+      <DialogContent className="sm:max-w-[600px] ">
         <DialogHeader>
           <DialogTitle className="sr-only">Quick Capture</DialogTitle>
         </DialogHeader>

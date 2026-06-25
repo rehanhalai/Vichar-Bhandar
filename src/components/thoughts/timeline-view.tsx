@@ -36,7 +36,7 @@ export function TimelineView({ thoughts }: { thoughts: any[] }) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4 md:p-6 space-y-8">
+    <div className="max-w-2xl mx-auto space-y-8">
       {dates.map(date => (
         <div key={date}>
           <h3 className="text-sm font-semibold text-muted-foreground mb-4 sticky top-0 bg-background/95 backdrop-blur py-2 z-10">

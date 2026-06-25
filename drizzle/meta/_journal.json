@@ -8,6 +8,13 @@
       "when": 1782283585132,
       "tag": "0000_lively_madame_masque",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1782371471250,
+      "tag": "0001_narrow_penance",
+      "breakpoints": true
     }
   ]
 }

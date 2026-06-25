@@ -12,7 +12,7 @@ export function ThoughtCard({ thought }: { thought: any }) {
   const moodEmoji = ["", "😔", "😕", "😐", "🙂", "😄"];
 
   return (
-    <Card className="mb-4 relative group overflow-hidden border-black/10 dark:border-white/10">
+    <Card className="mb-4 relative group overflow-hidden ">
       <CardContent className="p-4">
         {thought.isPinned === 1 && (
           <Pin className="w-4 h-4 text-muted-foreground absolute top-4 right-4" />
@@ -24,7 +24,7 @@ export function ThoughtCard({ thought }: { thought: any }) {
           {thought.category && (
             <Badge 
               variant="secondary" 
-              style={{ backgroundColor: `${thought.category.color}20`, color: thought.category.color }}
+              style={{ backgroundColor: `${thought.category.color ?? "#888"}20`, color: thought.category.color ?? "#888" }}
             >
               {thought.category.name}
             </Badge>

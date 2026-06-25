@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/app-sidebar";
+import localFont from "next/font/local";
+import { ThemeProvider } from "next-themes";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SiteHeader } from "@/components/site-header";
+import { NotificationScheduler } from "@/components/shared/notification-scheduler";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { JetBrains_Mono } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,21 +34,38 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning className={cn("font-mono", jetbrainsMono.variable)}>
+      <head>
+        <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TooltipProvider>
-          <SidebarProvider>
-            <AppSidebar />
-            <main className="flex-1 overflow-auto bg-background">
-              <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
-                <SidebarTrigger />
-              </header>
-              {children}
-            </main>
-          </SidebarProvider>
-        </TooltipProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <TooltipProvider>
+            <SidebarProvider
+              style={
+                {
+                  "--sidebar-width": "18rem",
+                  "--header-height": "3rem",
+                } as React.CSSProperties
+              }
+            >
+              <AppSidebar variant="inset" />
+              <NotificationScheduler />
+              <SidebarInset>
+                <SiteHeader />
+                <div className="flex flex-1 flex-col">
+                  {children}
+                </div>
+              </SidebarInset>
+            </SidebarProvider>
+          </TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
