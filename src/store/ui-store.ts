@@ -20,6 +20,10 @@ interface UIStore {
   editingReminder: AppReminder | null
   openReminderDialog: (reminder?: AppReminder) => void
   closeReminderDialog: () => void
+
+  isThoughtDialogOpen: boolean
+  openThoughtDialog: () => void
+  closeThoughtDialog: () => void
 }
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -33,4 +37,8 @@ export const useUIStore = create<UIStore>((set) => ({
     isReminderDialogOpen: false, 
     editingReminder: null 
   }),
+
+  isThoughtDialogOpen: false,
+  openThoughtDialog: () => set({ isThoughtDialogOpen: true }),
+  closeThoughtDialog: () => set({ isThoughtDialogOpen: false }),
 }))

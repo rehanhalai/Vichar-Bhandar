@@ -39,14 +39,18 @@ export function DashboardView({ initialThoughts, initialReminders }: any) {
 
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-      <SectionCards thoughtsToday={thoughtsToday} streak={streak} remindersDue={remindersDue} />
-      <div className="px-4 lg:px-6">
-        <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
-          <QuickCapture />
-          <UpcomingReminders reminders={reminders} />
+      <div className="flex flex-col gap-4 md:gap-6 md:flex-col">
+        <div className="order-2 md:order-1">
+          <SectionCards thoughtsToday={thoughtsToday} streak={streak} remindersDue={remindersDue} />
+        </div>
+        <div className="px-4 lg:px-6 order-1 md:order-2">
+          <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
+            <QuickCapture />
+            <UpcomingReminders reminders={reminders} />
+          </div>
         </div>
       </div>
-      <div className="px-4 lg:px-6">
+      <div className="px-4 lg:px-6 order-3">
         <RecentThoughts thoughts={thoughts} />
       </div>
     </div>

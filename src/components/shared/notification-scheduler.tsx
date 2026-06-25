@@ -1,38 +1,96 @@
 "use client"
 
-import { useEffect, useRef } from "react"
-import { showNotification, scheduleDailyReminder } from "@/lib/notifications"
-import { getAllReminders } from "@/actions/reminders"
+import { useEffect, useState } from "react"
+import { savePushSubscription } from "@/actions/push"
+import { Button } from "@/components/ui/button"
+import { Bell, BellOff, Loader2 } from "lucide-react"
+
+// Utility to convert VAPID key
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
 
 export function NotificationScheduler() {
-  const scheduledRef = useRef(false)
+  const [permission, setPermission] = useState<NotificationPermission>("default")
+  const [isSubscribing, setIsSubscribing] = useState(false)
 
   useEffect(() => {
-    if (scheduledRef.current) return
-    scheduledRef.current = true
+    if (!("Notification" in window)) return
+    setPermission(Notification.permission)
 
-    if (!("Notification" in window) || Notification.permission !== "granted") return
-
-    scheduleDailyReminder(20, 0)
-
-    const interval = setInterval(async () => {
-      try {
-        const reminders = await getAllReminders({ completed: false })
-        const now = new Date()
-
-        for (const r of reminders) {
-          if (!r.dueDate || !r.dueTime) continue
-          const dueDate = new Date(`${r.dueDate}T${r.dueTime}`)
-          const diff = Math.abs(now.getTime() - dueDate.getTime())
-          if (diff < 60000) {
-            showNotification("Reminder Due", r.title)
-          }
-        }
-      } catch {}
-    }, 60000)
-
-    return () => clearInterval(interval)
+    // If they already granted permission, ensure we are subscribed silently
+    if (Notification.permission === "granted") {
+      subscribeToPush()
+    }
   }, [])
 
-  return null
+  const subscribeToPush = async () => {
+    try {
+      setIsSubscribing(true)
+      
+      if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+        console.error("Push not supported")
+        return
+      }
+
+      // Ensure SW is ready
+      const registration = await navigator.serviceWorker.ready
+
+      // Ask for permission if not granted
+      const perm = await Notification.requestPermission()
+      setPermission(perm)
+
+      if (perm !== "granted") return
+
+      // Check if already subscribed
+      let subscription = await registration.pushManager.getSubscription()
+
+      if (!subscription) {
+        const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+        if (!publicKey) {
+          console.error("Missing NEXT_PUBLIC_VAPID_PUBLIC_KEY")
+          return
+        }
+
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(publicKey)
+        })
+      }
+
+      // Send to server
+      await savePushSubscription(JSON.parse(JSON.stringify(subscription)))
+    } catch (err) {
+      console.error("Failed to subscribe to push", err)
+    } finally {
+      setIsSubscribing(false)
+    }
+  }
+
+  // Only show button if not granted
+  if (permission === "granted") return null
+
+  return (
+    <Button 
+      variant="outline" 
+      size="sm" 
+      onClick={subscribeToPush}
+      disabled={isSubscribing}
+      className="h-8 w-full text-xs gap-2"
+    >
+      {isSubscribing ? <Loader2 className="size-3.5 animate-spin" /> : <Bell className="size-3.5" />}
+      Enable Push
+    </Button>
+  )
 }

@@ -25,7 +25,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "ThoughtDump",
+  title: "Vichar no Bhandar",
   description: "Personal thought dumper",
 };
 
@@ -71,7 +71,6 @@ export default function RootLayout({
               }
             >
               <AppSidebar variant="inset" />
-              <NotificationScheduler />
               <SidebarInset>
                 <SiteHeader />
                 <div className="flex flex-1 flex-col">

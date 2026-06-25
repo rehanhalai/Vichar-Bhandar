@@ -1,9 +1,7 @@
 "use client"
 
 import { usePathname } from "next/navigation"
-import { useTheme } from "next-themes"
 import * as React from "react"
-import { IconSun, IconMoon } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
@@ -17,13 +15,7 @@ const pageTitles: Record<string, string> = {
 
 export function SiteHeader() {
   const pathname = usePathname()
-  const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = React.useState(false)
-  const title = pageTitles[pathname] || "ThoughtDump"
-
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
+  const title = pageTitles[pathname] || "Vichar no Bhandar"
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -35,21 +27,6 @@ export function SiteHeader() {
         />
         <h1 className="text-base font-medium">{title}</h1>
         <div className="ml-auto flex items-center gap-2">
-          {mounted && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-8"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            >
-              {theme === "dark" ? (
-                <IconSun className="size-4" />
-              ) : (
-                <IconMoon className="size-4" />
-              )}
-              <span className="sr-only">Toggle theme</span>
-            </Button>
-          )}
         </div>
       </div>
     </header>

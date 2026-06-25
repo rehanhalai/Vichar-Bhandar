@@ -111,6 +111,7 @@ export function QuickCapture() {
       <CardContent className="px-4 pb-4">
         <div className="relative group">
           <Textarea
+            id="quick-capture-textarea"
             ref={textareaRef}
             placeholder="What's on your mind?"
             value={body}

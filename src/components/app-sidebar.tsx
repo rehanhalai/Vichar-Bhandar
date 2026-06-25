@@ -13,9 +13,7 @@ import {
   IconSun,
   IconMoon,
 } from "@tabler/icons-react"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { requestNotificationPermission } from "@/lib/notifications"
+import { NotificationScheduler } from "@/components/shared/notification-scheduler"
 
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
@@ -60,41 +58,27 @@ const data = {
       icon: IconBell,
     },
   ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
-  ],
+  // navSecondary: [
+  //   {
+  //     title: "Settings",
+  //     url: "#",
+  //     icon: IconSettings,
+  //   },
+  //   {
+  //     title: "Get Help",
+  //     url: "#",
+  //     icon: IconHelp,
+  //   },
+  // ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { theme, setTheme } = useTheme()
-  const [notificationsEnabled, setNotificationsEnabled] = React.useState(false)
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
     setMounted(true)
-    const saved = localStorage.getItem("notificationsEnabled")
-    if (saved === "true") setNotificationsEnabled(true)
   }, [])
-
-  const handleNotificationToggle = async () => {
-    if (notificationsEnabled) {
-      setNotificationsEnabled(false)
-      localStorage.setItem("notificationsEnabled", "false")
-    } else {
-      const granted = await requestNotificationPermission()
-      setNotificationsEnabled(granted)
-      if (granted) localStorage.setItem("notificationsEnabled", "true")
-    }
-  }
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -109,32 +93,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <IconBrain className="size-5" />
               </div>
-              <span className="text-base font-semibold">ThoughtDump</span>
+              <span className="text-base font-semibold">Vichar no Bhandar</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <div className="flex items-center gap-3 px-2 py-1.5">
-                  <Switch
-                    id="notifications"
-                    checked={notificationsEnabled}
-                    onCheckedChange={handleNotificationToggle}
-                  />
-                  <Label htmlFor="notifications" className="text-sm cursor-pointer">
-                    Reminders
-                  </Label>
-                </div>
-              </SidebarMenuItem>
-              {mounted && (
+               {mounted && (
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -149,6 +121,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )}
+              <SidebarMenuItem>
+                <div className="px-2 py-1.5 w-full">
+                  <NotificationScheduler />
+                </div>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -58,6 +58,14 @@ export const reminders = sqliteTable("reminders", {
   updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
 
+export const pushSubscriptions = sqliteTable("push_subscriptions", {
+  id: text("id").primaryKey(),
+  endpoint: text("endpoint").notNull(),
+  p256dh: text("p256dh").notNull(),
+  auth: text("auth").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow(),
+});
+
 export const remindersRelations = relations(reminders, ({ one }) => ({
   category: one(categories, {
     fields: [reminders.categoryId],

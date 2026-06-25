@@ -61,7 +61,7 @@ export function CategorySelector({ value, onChange, disabled }: CategorySelector
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger 
         className={cn(
-          "flex w-full items-center justify-between sm:w-[200px] h-8 text-xs bg-muted/50 hover:bg-muted px-3 rounded-md border border-input outline-none focus:ring-1 focus:ring-ring",
+          "flex w-60 items-center justify-between sm:w-55 h-8 text-xs bg-muted/50 hover:bg-muted px-3 rounded-md border border-input outline-none focus:ring-1 focus:ring-ring",
           disabled && "opacity-50 cursor-not-allowed pointer-events-none"
         )}
         disabled={disabled}
@@ -76,7 +76,7 @@ export function CategorySelector({ value, onChange, disabled }: CategorySelector
         )}
         <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" align="start">
+      <PopoverContent className="w-60 p-0" align="start">
         <Command shouldFilter={false}>
           <CommandInput 
             placeholder="Search category..." 
