@@ -5,7 +5,7 @@ import { CalendarDays, GanttChart, Plus, ChevronLeft, ChevronRight, X, Clock, Pe
 import {
   format, startOfMonth, endOfMonth, startOfWeek, endOfWeek,
   eachDayOfInterval, isSameDay, isSameMonth, isToday,
-  differenceInDays, addDays, subDays, min, max, addMonths, subMonths
+  differenceInDays, addDays, subDays, min, max, addMonths, subMonths, parse
 } from "date-fns"
 import { cn } from "@/lib/utils"
 
@@ -341,7 +341,7 @@ export default function RemindersView({ reminders, onToggleComplete, onAddClick,
                               {r.dueTime && (
                                 <div className="flex items-center text-[10px] text-muted-foreground gap-1">
                                   <Clock className="w-3 h-3" />
-                                  {r.dueTime}
+                                  {format(parse(r.dueTime, "HH:mm", new Date()), "h:mm a")}
                                 </div>
                               )}
                             </div>
@@ -443,6 +443,12 @@ export default function RemindersView({ reminders, onToggleComplete, onAddClick,
                             <span className="text-muted-foreground">Due:</span>
                             <span>{format(r.dueAt, "MMM d")}</span>
                           </div>
+                          {r.dueTime && (
+                            <div className="flex gap-2 text-xs">
+                              <span className="text-muted-foreground">Time:</span>
+                              <span>{format(parse(r.dueTime, "HH:mm", new Date()), "h:mm a")}</span>
+                            </div>
+                          )}
                           {r.category && (
                             <div className="flex gap-2 text-xs">
                               <span className="text-muted-foreground">Category:</span>
