@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vichar Bhandar
 
-## Getting Started
+A personal, mobile-first dashboard built to seamlessly capture thoughts, manage reminders, and organize ideas. Formerly known as *thought-dumper*, this project is designed as a Progressive Web App (PWA) with quick capture capabilities and web push notifications.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Quick Capture:** Frictionless interface to immediately dump thoughts or set reminders.
+- **PWA Ready:** Installable on mobile devices with an optimized, app-like experience.
+- **Web Push Notifications:** Automated reminder alerts powered by Vercel Cron.
+- **Timeline View:** chronological overview of all captured thoughts and tasks.
+- **Modern UI/UX:** Responsive design with smooth micro-interactions, dark mode, and mobile-first layouts.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework:** [Next.js 14](https://nextjs.org/) (App Router & Server Actions)
+- **Database:** [Turso](https://turso.tech/) (Edge SQLite) with [Drizzle ORM](https://orm.drizzle.team/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **Components:** [shadcn/ui](https://ui.shadcn.com/) & [21st.dev](https://21st.dev/)
+- **State Management & Data Fetching:** TanStack Query (with optimistic updates)
+- **Deployment:** Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📦 Getting Started
 
-## Learn More
+### Prerequisites
+- Node.js (v18+)
+- pnpm / npm / yarn / bun
+- A Turso account and database
 
-To learn more about Next.js, take a look at the following resources:
+### Installation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Clone the repository:
+   ```bash
+   git clone git@github.com:rehanhalai/vichar-no-bhandaro.git
+   cd vichar-no-bhandaro
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. Install dependencies:
+   ```bash
+   pnpm install
+   # or npm install, yarn install, bun install
+   ```
 
-## Deploy on Vercel
+3. Set up environment variables. Create a `.env.local` file based on your `.env.example` (if present) and add your Turso credentials:
+   ```env
+   TURSO_DATABASE_URL="your-database-url"
+   TURSO_AUTH_TOKEN="your-auth-token"
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. Run database migrations (using Drizzle):
+   ```bash
+   pnpm db:push
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. Start the development server:
+   ```bash
+   pnpm dev
+   ```
+
+6. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+
+## 📱 PWA & Notifications
+
+To fully utilize the PWA features and web push notifications, ensure the application is served over HTTPS (which is required by Service Workers). Notifications are orchestrated via a server-side Vercel Cron job that triggers alerts for pending reminders.
