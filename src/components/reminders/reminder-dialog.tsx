@@ -68,18 +68,24 @@ export function ReminderDialog() {
   }, [isReminderDialogOpen, editingReminder])
 
   const createMutation = useMutation({
-    mutationFn: createReminder,
+    mutationFn: async (data: Parameters<typeof createReminder>[0]) => await createReminder(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reminders'] })
       closeReminderDialog()
+    },
+    onError: (err) => {
+      console.error("Failed to create reminder:", err)
     }
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Parameters<typeof updateReminder>[1] }) => updateReminder(id, data),
+    mutationFn: async ({ id, data }: { id: string; data: Parameters<typeof updateReminder>[1] }) => await updateReminder(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reminders'] })
       closeReminderDialog()
+    },
+    onError: (err) => {
+      console.error("Failed to update reminder:", err)
     }
   })
 

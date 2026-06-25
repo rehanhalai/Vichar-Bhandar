@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useEffect } from "react"
 import { toggleReminder, getAllReminders } from "@/actions/reminders"
 import RemindersView, { Priority, Reminder as ViewReminder } from "./reminders-view"
 import { parseISO } from "date-fns"
@@ -32,6 +32,11 @@ export function RemindersList({ initialReminders }: { initialReminders: AppRemin
   const [reminders, setReminders] = useState<AppReminder[]>(initialReminders)
   const [, startTransition] = useTransition()
   const { openReminderDialog } = useUIStore()
+
+  // Sync when server data updates (after revalidatePath)
+  useEffect(() => {
+    setReminders(initialReminders)
+  }, [initialReminders])
 
   const handleToggle = (id: string) => {
     // 1. Optimistically flip the local state immediately — no flicker, instant UI feedback
