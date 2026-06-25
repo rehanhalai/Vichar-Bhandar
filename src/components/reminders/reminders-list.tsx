@@ -1,11 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
+import { useState, useTransition } from "react"
 import { toggleReminder, getAllReminders } from "@/actions/reminders"
 import RemindersView, { Priority, Reminder as ViewReminder } from "./reminders-view"
 import { parseISO } from "date-fns"
@@ -14,57 +9,11 @@ import { useUIStore, AppReminder } from "@/store/ui-store"
 const priorityMap: Record<number, Priority> = {
   0: "low",
   1: "medium",
-  2: "high"
+  2: "high",
 }
 
-export function RemindersList({ initialReminders }: { initialReminders: AppReminder[] }) {
-  const queryClient = useQueryClient()
-  const { openReminderDialog } = useUIStore()
-  
-  const { data: reminders = initialReminders } = useQuery({
-    queryKey: ['reminders'],
-    queryFn: () => getAllReminders(undefined, Date.now()),
-    initialData: initialReminders,
-  })
-
-  const toggleMutation = useMutation({
-    mutationFn: toggleReminder,
-    onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: ['reminders'] })
-      const previous = queryClient.getQueryData<AppReminder[]>(['reminders'])
-      if (previous) {
-        queryClient.setQueryData<AppReminder[]>(['reminders'], prev => 
-          prev?.map(r => r.id === id ? { ...r, isCompleted: r.isCompleted ? 0 : 1 } : r)
-        )
-      }
-      return { previous }
-    },
-    onError: (err, id, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(['reminders'], context.previous)
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['reminders'] })
-    }
-  })
-
-  const handleToggle = (id: string, completed: boolean) => {
-    toggleMutation.mutate(id)
-  }
-
-  const handleAddClick = () => {
-    openReminderDialog()
-  }
-
-  const handleEditClick = (id: string) => {
-    const reminder = reminders.find((r: AppReminder) => r.id === id)
-    if (reminder) {
-      openReminderDialog(reminder)
-    }
-  }
-
-  const mappedReminders: ViewReminder[] = reminders.map(r => ({
+function toViewReminder(r: AppReminder): ViewReminder {
+  return {
     id: r.id,
     title: r.title,
     detail: r.description || undefined,
@@ -75,17 +24,49 @@ export function RemindersList({ initialReminders }: { initialReminders: AppRemin
     dueTime: r.dueTime || undefined,
     category: r.category?.name || undefined,
     categoryId: r.categoryId || null,
-    completed: !!r.isCompleted
-  }))
+    completed: !!r.isCompleted,
+  }
+}
+
+export function RemindersList({ initialReminders }: { initialReminders: AppReminder[] }) {
+  const [reminders, setReminders] = useState<AppReminder[]>(initialReminders)
+  const [, startTransition] = useTransition()
+  const { openReminderDialog } = useUIStore()
+
+  const handleToggle = (id: string) => {
+    // 1. Optimistically flip the local state immediately — no flicker, instant UI feedback
+    setReminders(prev =>
+      prev.map(r => r.id === id ? { ...r, isCompleted: r.isCompleted ? 0 : 1 } : r)
+    )
+
+    // 2. Fire server action in the background
+    startTransition(async () => {
+      try {
+        await toggleReminder(id)
+      } catch {
+        // Rollback on failure
+        setReminders(prev =>
+          prev.map(r => r.id === id ? { ...r, isCompleted: r.isCompleted ? 0 : 1 } : r)
+        )
+      }
+    })
+  }
+
+  const handleAddClick = () => {
+    openReminderDialog()
+  }
+
+  const handleEditClick = (id: string) => {
+    const reminder = reminders.find(r => r.id === id)
+    if (reminder) openReminderDialog(reminder)
+  }
 
   return (
-    <>
-      <RemindersView 
-        reminders={mappedReminders} 
-        onToggleComplete={handleToggle} 
-        onAddClick={handleAddClick} 
-        onEditClick={handleEditClick}
-      />
-    </>
+    <RemindersView
+      reminders={reminders.map(toViewReminder)}
+      onToggle={handleToggle}
+      onAddClick={handleAddClick}
+      onEditClick={handleEditClick}
+    />
   )
 }

@@ -1,11 +1,13 @@
 "use client"
 
+import { useState, useTransition } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Inbox } from "lucide-react"
 import { toggleReminder } from "@/actions/reminders"
 import { format, parseISO, isPast } from "date-fns"
+import { cn } from "@/lib/utils"
 
 interface Reminder {
   id: string
@@ -17,13 +19,34 @@ interface Reminder {
   category?: { name: string; color: string | null } | null
 }
 
-const priorityColors: Record<number, string> = {
-  0: "bg-gray-200 dark:bg-gray-700",
-  1: "bg-yellow-200 dark:bg-yellow-700",
-  2: "bg-red-200 dark:bg-red-700",
+const priorityDot: Record<number, string> = {
+  0: "bg-gray-300 dark:bg-gray-600",
+  1: "bg-yellow-400 dark:bg-yellow-500",
+  2: "bg-red-400 dark:bg-red-500",
 }
 
-export function UpcomingReminders({ reminders }: { reminders: Reminder[] }) {
+export function UpcomingReminders({ reminders: initial }: { reminders: Reminder[] }) {
+  const [reminders, setReminders] = useState<Reminder[]>(initial)
+  const [, startTransition] = useTransition()
+
+  const handleToggle = (id: string) => {
+    // Optimistic flip
+    setReminders(prev =>
+      prev.map(r => r.id === id ? { ...r, isCompleted: r.isCompleted ? 0 : 1 } : r)
+    )
+
+    startTransition(async () => {
+      try {
+        await toggleReminder(id)
+      } catch {
+        // Rollback
+        setReminders(prev =>
+          prev.map(r => r.id === id ? { ...r, isCompleted: r.isCompleted ? 0 : 1 } : r)
+        )
+      }
+    })
+  }
+
   if (reminders.length === 0) {
     return (
       <Card className="@container/card">
@@ -46,37 +69,54 @@ export function UpcomingReminders({ reminders }: { reminders: Reminder[] }) {
       <CardHeader>
         <CardTitle className="text-sm font-medium">Upcoming Reminders</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {reminders.map((reminder) => {
-          const isOverdue = reminder.dueDate && isPast(parseISO(reminder.dueDate)) && !reminder.isCompleted
+      <CardContent className="space-y-1">
+        {reminders.map(reminder => {
+          const isCompleted = !!reminder.isCompleted
+          const isOverdue =
+            !isCompleted &&
+            !!reminder.dueDate &&
+            isPast(parseISO(reminder.dueDate))
 
           return (
-            <div key={reminder.id} className="flex items-start gap-3 group">
+            <div
+              key={reminder.id}
+              className={cn(
+                "flex items-start gap-3 px-2 py-2 rounded-lg transition-colors",
+                isCompleted ? "bg-muted/30" : "hover:bg-muted/40"
+              )}
+            >
               <Checkbox
-                id={`reminder-${reminder.id}`}
-                checked={!!reminder.isCompleted}
-                onCheckedChange={() => toggleReminder(reminder.id)}
-                className="mt-0.5"
+                id={`ur-${reminder.id}`}
+                checked={isCompleted}
+                onCheckedChange={() => handleToggle(reminder.id)}
+                className="mt-0.5 shrink-0"
               />
               <div className="flex-1 min-w-0">
                 <Label
-                  htmlFor={`reminder-${reminder.id}`}
-                  className={`text-sm cursor-pointer ${reminder.isCompleted ? "line-through text-muted-foreground" : ""}`}
+                  htmlFor={`ur-${reminder.id}`}
+                  className={cn(
+                    "text-sm cursor-pointer select-none",
+                    isCompleted && "line-through text-muted-foreground"
+                  )}
                 >
                   {reminder.title}
                 </Label>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className={`size-2 rounded-full ${priorityColors[reminder.priority ?? 1] ?? "bg-gray-300"}`} />
+                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span className={cn("size-2 rounded-full shrink-0", priorityDot[reminder.priority ?? 1] ?? "bg-gray-300")} />
                   {reminder.dueDate && (
-                    <span className={`text-[10px] ${isOverdue ? "text-red-500 font-medium" : "text-muted-foreground"}`}>
+                    <span className={cn("text-[10px]", isOverdue ? "text-red-500 font-medium" : "text-muted-foreground")}>
                       {format(parseISO(reminder.dueDate), "MMM d")}
                       {reminder.dueTime ? ` at ${reminder.dueTime}` : ""}
+                      {isOverdue && " · overdue"}
                     </span>
                   )}
                   {reminder.category && (
                     <span
-                      className="text-[10px] px-1 py-0.5 rounded"
-                      style={{ backgroundColor: `${reminder.category.color ?? "#888"}20`, color: reminder.category.color ?? "#888" }}
+                      className="text-[10px] px-1.5 py-0.5 rounded font-medium"
+                      style={{
+                        backgroundColor: `${reminder.category.color ?? "#888"}20`,
+                        color: reminder.category.color ?? "#888",
+                      }}
                     >
                       {reminder.category.name}
                     </span>

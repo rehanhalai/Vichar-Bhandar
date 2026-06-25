@@ -14,12 +14,16 @@ export function DashboardView({ initialThoughts, initialReminders }: any) {
     queryKey: ['thoughts'],
     queryFn: () => getAllThoughts(undefined, Date.now()),
     initialData: initialThoughts,
+    staleTime: 0,
+    gcTime: 0,
   })
 
   const { data: reminders = initialReminders } = useQuery({
     queryKey: ['upcoming-reminders'],
     queryFn: () => getUpcomingReminders(5, Date.now()),
     initialData: initialReminders,
+    staleTime: 0,
+    gcTime: 0,
   })
 
   const today = format(new Date(), "yyyy-MM-dd")
