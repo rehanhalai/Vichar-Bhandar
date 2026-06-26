@@ -54,7 +54,7 @@ export async function GET(request: Request) {
 
     // Configure Web Push
     webpush.setVapidDetails(
-      'mailto:admin@thoughtdump.com',
+      process.env.VAPID_SUBJECT!,
       process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
       process.env.VAPID_PRIVATE_KEY!
     );
