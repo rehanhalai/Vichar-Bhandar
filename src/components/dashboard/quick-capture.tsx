@@ -9,12 +9,15 @@ import { createThought } from "@/actions/thoughts"
 import { upsertDraft, getDraft, clearDraft } from "@/actions/drafts"
 import { CategorySelector } from "@/components/categories/category-selector"
 import { format } from "date-fns"
+import { cn } from "@/lib/utils"
 import { Send, Sparkles, Loader2 } from "lucide-react"
+import { MOODS } from "@/lib/constants"
 
 export function QuickCapture() {
   const queryClient = useQueryClient()
   const [body, setBody] = useState("")
   const [categoryId, setCategoryId] = useState<string | null>(null)
+  const [mood, setMood] = useState<number | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
@@ -81,6 +84,7 @@ export function QuickCapture() {
     onSuccess: () => {
       setBody("")
       setCategoryId(null)
+      setMood(null)
       clearDraft()
     }
   })
@@ -90,6 +94,7 @@ export function QuickCapture() {
     createMutation.mutate({
       body,
       categoryId,
+      mood,
       date: format(new Date(), "yyyy-MM-dd"),
       tags: [],
     })
@@ -125,8 +130,23 @@ export function QuickCapture() {
             }}
             className="min-h-[120px] resize-none bg-muted/40 focus-visible:bg-background border-muted-foreground/20 focus-visible:border-primary/50 focus-visible:ring-4 focus-visible:ring-primary/10 p-4 text-base transition-all pb-14 rounded-xl disabled:opacity-50"
           />
-          <div className="absolute bottom-3 left-3 w-[140px]">
-            <CategorySelector value={categoryId} onChange={setCategoryId} disabled={createMutation.isPending} />
+          <div className="absolute bottom-3 left-3 flex items-center gap-2">
+            <div className="w-[140px]">
+              <CategorySelector value={categoryId} onChange={setCategoryId} disabled={createMutation.isPending} />
+            </div>
+            <div className="flex items-center gap-0.5 bg-muted/30 rounded-full px-1 py-0.5 border border-transparent hover:border-border transition-colors">
+              {MOODS.map((m, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setMood(mood === i + 1 ? null : i + 1)}
+                  className={cn("size-6 flex items-center justify-center rounded-full text-sm opacity-50 hover:opacity-100 transition-all", mood === i + 1 && "opacity-100 bg-background shadow-sm scale-110")}
+                  title={`Mood ${i + 1}`}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="absolute bottom-3 right-3 flex items-center gap-3">
             <span className="text-[10px] text-muted-foreground hidden sm:inline-block opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none">
