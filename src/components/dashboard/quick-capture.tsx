@@ -152,16 +152,20 @@ export function QuickCapture() {
             <span className="text-[10px] text-muted-foreground hidden sm:inline-block opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none">
               Press <kbd className="font-sans px-1 py-0.5 rounded bg-muted border">⌘</kbd> <kbd className="font-sans px-1 py-0.5 rounded bg-muted border">↵</kbd> to save
             </span>
-            <Button type="button" onClick={handleSave} disabled={!body.trim() || createMutation.isPending} size="sm" className="h-8 rounded-lg shadow-none font-medium min-w-[70px] transition-all">
+            <Button type="button" onClick={handleSave} disabled={!body.trim() || createMutation.isPending} size="sm" className="h-8 rounded-lg shadow-none font-medium sm:min-w-17.5 transition-all">
               {createMutation.isPending ? (
                 <>
                   <Loader2 className="size-3.5 mr-1.5 animate-spin" />
-                  Saving
+                  <span className="hidden sm:block">
+                    Saving
+                  </span>
                 </>
               ) : (
                 <>
                   <Send className="size-3.5 mr-1.5" />
-                  Save
+                  <span className="hidden sm:block">
+                    Save
+                  </span>
                 </>
               )}
             </Button>
