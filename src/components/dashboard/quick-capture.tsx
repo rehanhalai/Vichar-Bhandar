@@ -12,6 +12,7 @@ import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Send, Sparkles, Loader2 } from "lucide-react"
 import { MOODS } from "@/lib/constants"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export function QuickCapture() {
   const queryClient = useQueryClient()
@@ -131,10 +132,10 @@ export function QuickCapture() {
             className="min-h-[120px] resize-none bg-muted/40 focus-visible:bg-background border-muted-foreground/20 focus-visible:border-primary/50 focus-visible:ring-4 focus-visible:ring-primary/10 p-4 text-base transition-all pb-14 rounded-xl disabled:opacity-50"
           />
           <div className="absolute bottom-3 left-3 flex items-center gap-2">
-            <div className="w-[140px]">
+            <div className="w-[130px] sm:w-[140px]">
               <CategorySelector value={categoryId} onChange={setCategoryId} disabled={createMutation.isPending} />
             </div>
-            <div className="flex items-center gap-0.5 bg-muted/30 rounded-full px-1 py-0.5 border border-transparent hover:border-border transition-colors">
+            <div className="hidden sm:flex items-center gap-0.5 bg-muted/30 rounded-full px-1 py-0.5 border border-transparent hover:border-border transition-colors">
               {MOODS.map((m, i) => (
                 <button
                   key={i}
@@ -146,6 +147,20 @@ export function QuickCapture() {
                   {m}
                 </button>
               ))}
+            </div>
+            <div className="sm:hidden w-[100px]">
+              <Select value={mood ? mood.toString() : ""} onValueChange={(v) => setMood(v ? parseInt(v) : null)}>
+                <SelectTrigger className="h-8 text-xs bg-muted/30 border-dashed">
+                  <SelectValue placeholder="Mood..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {MOODS.map((m, i) => (
+                    <SelectItem key={i} value={(i + 1).toString()} className="text-xs">
+                      <span className="mr-2">{m}</span> Mood {i + 1}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="absolute bottom-3 right-3 flex items-center gap-3">
