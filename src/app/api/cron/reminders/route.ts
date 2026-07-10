@@ -24,12 +24,22 @@ export async function GET(request: Request) {
     });
 
     const now = Date.now();
-    const notificationThresholdsHours = [72, 24, 6, 3, 1]; // 3 days, 1 day, 6h, 3h, 1h
+    const notificationThresholdsHours = [72, 24, 6, 3, 1, 0]; // Added 0 for "Due Now"
     const remindersToPush = [];
 
     for (const r of allPendingReminders) {
-      if (!r.dueDate || !r.dueTime) continue;
-      const dueDate = new Date(`${r.dueDate}T${r.dueTime}`).getTime();
+      if (!r.dueDate || !r.dueTime || r.dueTime === 'null' || r.dueDate === 'null') continue;
+      
+      // Vercel servers run in UTC, but the user inputs local time (IST, +05:30).
+      // We explicitly append the IST timezone offset to evaluate the correct timestamp.
+      const dueDateStr = `${r.dueDate}T${r.dueTime}:00+05:30`;
+      const dueDate = new Date(dueDateStr).getTime();
+      
+      if (isNaN(dueDate)) {
+        console.error(`Invalid date parsing for reminder ${r.id}: ${dueDateStr}`);
+        continue;
+      }
+
       const hoursUntilDue = (dueDate - now) / (1000 * 60 * 60);
 
       // Check if it falls precisely in one of our thresholds
@@ -61,8 +71,9 @@ export async function GET(request: Request) {
 
     let sentCount = 0;
     for (const { reminder, threshold } of remindersToPush) {
+      const title = threshold === 0 ? "Reminder Due Now" : `Reminder Due in ${threshold} Hours`;
       const payload = JSON.stringify({
-        title: `Reminder Due in ${threshold} Hours`,
+        title,
         body: reminder.title,
       });
 
