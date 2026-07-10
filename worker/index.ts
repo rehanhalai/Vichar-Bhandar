@@ -3,21 +3,27 @@ export default null;
 declare let self: ServiceWorkerGlobalScope;
 
 self.addEventListener("push", (event) => {
-  try {
-    const data = event.data ? event.data.json() : {};
-    const title = data.title || "Vichar Bhandar";
-    const body = data.body || "You have a new reminder.";
-    
-    event.waitUntil(
-      self.registration.showNotification(title, {
-        body,
-        icon: "/favicon.ico",
-        badge: "/favicon.ico",
-      })
-    );
-  } catch (e) {
-    console.error("Error showing push notification:", e);
+  let title = "Vichar Bhandar";
+  let body = "You have a new reminder.";
+
+  if (event.data) {
+    try {
+      const data = event.data.json();
+      if (data.title) title = data.title;
+      if (data.body) body = data.body;
+    } catch (e) {
+      // If parsing fails, fallback to the text itself
+      body = event.data.text() || body;
+    }
   }
+  
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon: "/favicon.ico",
+      badge: "/favicon.ico",
+    })
+  );
 });
 
 self.addEventListener("notificationclick", (event) => {
