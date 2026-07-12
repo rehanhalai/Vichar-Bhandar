@@ -4,10 +4,10 @@ import { useQuery } from "@tanstack/react-query"
 import { getAllThoughts } from "@/features/thoughts/actions"
 import { getUpcomingReminders } from "@/features/reminders/actions"
 import { format } from "date-fns"
-import { SectionCards } from "@/components/dashboard/section-cards"
-import { QuickCapture } from "@/components/dashboard/quick-capture"
-import { RecentThoughts } from "@/components/dashboard/recent-thoughts"
-import { UpcomingReminders } from "@/components/dashboard/upcoming-reminders"
+import { SectionCards } from "@/features/dashboard/components/section-cards"
+import { QuickCapture } from "@/features/dashboard/components/quick-capture"
+import { RecentThoughts } from "@/features/dashboard/components/recent-thoughts"
+import { UpcomingReminders } from "@/features/dashboard/components/upcoming-reminders"
 
 export function DashboardView({ initialThoughts, initialReminders }: any) {
   const { data: thoughts = initialThoughts } = useQuery({
