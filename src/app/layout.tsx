@@ -5,7 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
-import { NotificationScheduler } from "@/components/shared/notification-scheduler";
+import { NotificationScheduler } from "@/features/notifications/components/notification-scheduler";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { JetBrains_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";

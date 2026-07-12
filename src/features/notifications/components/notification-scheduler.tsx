@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { savePushSubscription } from "@/actions/push"
+import { savePushSubscription } from "@/features/notifications/actions"
 import { Button } from "@/components/ui/button"
 import { Bell, BellOff, Loader2 } from "lucide-react"
 
