@@ -7,7 +7,7 @@ import { format, parseISO, isSameDay } from "date-fns"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { createThought, getAllThoughts } from "@/actions/thoughts"
+import { createThought, getAllThoughts } from "@/features/thoughts/actions"
 import { getAllReminders } from "@/actions/reminders"
 import { Brain, Plus } from "lucide-react"
 

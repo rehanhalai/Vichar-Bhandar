@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { getAllThoughts } from "@/actions/thoughts"
+import { getAllThoughts } from "@/features/thoughts/actions"
 import { getUpcomingReminders } from "@/actions/reminders"
 import { format } from "date-fns"
 import { SectionCards } from "@/components/dashboard/section-cards"

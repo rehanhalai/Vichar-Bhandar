@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { deleteThought } from "@/actions/thoughts";
+import { deleteThought } from "@/features/thoughts/actions";
 import { useUIStore } from "@/store/ui-store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MOODS } from "@/lib/constants";

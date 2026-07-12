@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { createThought } from "@/actions/thoughts";
+import { createThought } from "@/features/thoughts/actions";
 import { format } from "date-fns";
 
 export function QuickCapture() {

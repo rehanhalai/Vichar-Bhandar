@@ -1,4 +1,4 @@
-import { getAllThoughts } from "@/actions/thoughts"
+import { getAllThoughts } from "@/features/thoughts/actions"
 import { getUpcomingReminders } from "@/actions/reminders"
 import { DashboardView } from "@/components/dashboard/dashboard-view"
 

@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { updateThought } from "@/actions/thoughts"
+import { updateThought } from "@/features/thoughts/actions"
 import { useUIStore } from "@/store/ui-store"
 import { CategorySelector } from "@/components/categories/category-selector"
 import { Loader2 } from "lucide-react"
