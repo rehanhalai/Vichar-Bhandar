@@ -15,9 +15,9 @@ import {
 } from "@tabler/icons-react"
 import { NotificationScheduler } from "@/features/notifications/components/notification-scheduler"
 
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/features/navigation/components/nav-main"
+import { NavSecondary } from "@/features/navigation/components/nav-secondary"
+import { NavUser } from "@/features/navigation/components/nav-user"
 import {
   Sidebar,
   SidebarContent,
