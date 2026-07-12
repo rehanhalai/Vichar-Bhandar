@@ -18,7 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { getAllCategories, createCategory } from "@/actions/categories"
+import { getAllCategories, createCategory } from "@/features/categories/actions"
 
 interface CategorySelectorProps {
   value?: string | null

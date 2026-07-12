@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog"
 import { updateThought } from "@/features/thoughts/actions"
 import { useUIStore } from "@/store/ui-store"
-import { CategorySelector } from "@/components/categories/category-selector"
+import { CategorySelector } from "@/features/categories/components/category-selector"
 import { Loader2 } from "lucide-react"
 import { MOODS } from "@/lib/constants"
 

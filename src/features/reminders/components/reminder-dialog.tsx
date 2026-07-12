@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select"
 import { createReminder, updateReminder } from "@/features/reminders/actions"
 import { useUIStore } from "@/store/ui-store"
-import { CategorySelector } from "@/components/categories/category-selector"
+import { CategorySelector } from "@/features/categories/components/category-selector"
 
 interface ReminderFormData {
   title: string
