@@ -1,5 +1,5 @@
 import { getAllThoughts } from "@/features/thoughts/actions"
-import { getAllReminders } from "@/actions/reminders"
+import { getAllReminders } from "@/features/reminders/actions"
 import { CalendarView } from "@/components/calendar/calendar-view"
 
 export const dynamic = 'force-dynamic'

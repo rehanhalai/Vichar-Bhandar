@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { createReminder, updateReminder } from "@/actions/reminders"
+import { createReminder, updateReminder } from "@/features/reminders/actions"
 import { useUIStore } from "@/store/ui-store"
 import { CategorySelector } from "@/components/categories/category-selector"
 

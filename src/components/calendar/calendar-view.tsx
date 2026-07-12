@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { createThought, getAllThoughts } from "@/features/thoughts/actions"
-import { getAllReminders } from "@/actions/reminders"
+import { getAllReminders } from "@/features/reminders/actions"
 import { Brain, Plus } from "lucide-react"
 
 interface Thought {

@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { getAllThoughts } from "@/features/thoughts/actions"
-import { getUpcomingReminders } from "@/actions/reminders"
+import { getUpcomingReminders } from "@/features/reminders/actions"
 import { format } from "date-fns"
 import { SectionCards } from "@/components/dashboard/section-cards"
 import { QuickCapture } from "@/components/dashboard/quick-capture"

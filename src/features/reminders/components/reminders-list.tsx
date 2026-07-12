@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition, useEffect } from "react"
-import { toggleReminder, getAllReminders } from "@/actions/reminders"
+import { toggleReminder, getAllReminders } from "@/features/reminders/actions"
 import RemindersView, { Priority, Reminder as ViewReminder } from "./reminders-view"
 import { parseISO } from "date-fns"
 import { useUIStore, AppReminder } from "@/store/ui-store"

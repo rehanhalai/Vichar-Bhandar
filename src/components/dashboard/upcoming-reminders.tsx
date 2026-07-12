@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Inbox } from "lucide-react"
-import { toggleReminder } from "@/actions/reminders"
+import { toggleReminder } from "@/features/reminders/actions"
 import { format, parseISO, isPast } from "date-fns"
 import { cn } from "@/lib/utils"
 

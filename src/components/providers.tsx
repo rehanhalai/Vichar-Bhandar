@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useState } from "react"
-import { ReminderDialog } from "@/components/reminders/reminder-dialog"
+import { ReminderDialog } from "@/features/reminders/components/reminder-dialog"
 import { ThoughtDialog } from "@/features/thoughts/components/thought-dialog"
 
 export function Providers({ children }: { children: React.ReactNode }) {
