@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardDescription, CardAction } from "@/components/ui/card"
 import { createThought } from "@/features/thoughts/actions"
-import { upsertDraft, getDraft, clearDraft } from "@/actions/drafts"
+import { upsertDraft, getDraft, clearDraft } from "@/features/capture/actions"
 import { CategorySelector } from "@/features/categories/components/category-selector"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
@@ -33,7 +33,7 @@ export function QuickCapture() {
   }, [])
 
   useEffect(() => {
-    getDraft().then((draft) => {
+    getDraft().then((draft: any) => {
       if (draft?.body) setBody(draft.body)
     })
   }, [])
