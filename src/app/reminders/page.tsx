@@ -1,5 +1,5 @@
-import { RemindersList } from "@/components/reminders/reminders-list"
-import { getAllReminders } from "@/actions/reminders"
+import { RemindersList } from "@/features/reminders/components/reminders-list"
+import { getAllReminders } from "@/features/reminders/actions"
 
 export const dynamic = 'force-dynamic'
 

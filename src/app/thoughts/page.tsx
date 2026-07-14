@@ -1,5 +1,5 @@
-import { getAllThoughts } from "@/actions/thoughts"
-import { TimelineView } from "@/components/thoughts/timeline-view"
+import { getAllThoughts } from "@/features/thoughts/actions"
+import { TimelineView } from "@/features/thoughts/components/timeline-view"
 
 export const dynamic = 'force-dynamic'
 

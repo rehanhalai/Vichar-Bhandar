@@ -1,6 +1,6 @@
-import { getAllThoughts } from "@/actions/thoughts"
-import { getUpcomingReminders } from "@/actions/reminders"
-import { DashboardView } from "@/components/dashboard/dashboard-view"
+import { getAllThoughts } from "@/features/thoughts/actions"
+import { getUpcomingReminders } from "@/features/reminders/actions"
+import { DashboardView } from "@/features/dashboard/components/dashboard-view"
 
 export const dynamic = 'force-dynamic'
 
