@@ -4,12 +4,11 @@ import { reminders, pushSubscriptions } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import webpush from 'web-push';
 
-export const dynamic = 'force-dynamic'; // Prevent Vercel from caching the cron job
 
 export async function GET(request: Request) {
-  // Security check: Vercel sends a specific header when triggering crons securely
+  // Security check: ensure the request is authorized
   const authHeader = request.headers.get('authorization');
-  const secret = process.env.CRON_SECRET || process.env.VERCEL_CRON_SECRET;
+  const secret = process.env.CRON_SECRET;
   if (
     secret && 
     authHeader !== `Bearer ${secret}`
@@ -24,13 +23,13 @@ export async function GET(request: Request) {
     });
 
     const now = Date.now();
-    const notificationThresholdsHours = [72, 24, 6, 3, 1, 0]; // Added 0 for "Due Now"
+    const notificationThresholdsHours = [72,36, 24,12, 6, 3, 1, 0]; // Added 0 for "Due Now"
     const remindersToPush = [];
 
     for (const r of allPendingReminders) {
       if (!r.dueDate || !r.dueTime || r.dueTime === 'null' || r.dueDate === 'null') continue;
       
-      // Vercel servers run in UTC, but the user inputs local time (IST, +05:30).
+      // The server might run in UTC, but the user inputs local time (IST, +05:30).
       // We explicitly append the IST timezone offset to evaluate the correct timestamp.
       const dueDateStr = `${r.dueDate}T${r.dueTime}:00+05:30`;
       const dueDate = new Date(dueDateStr).getTime();
@@ -43,7 +42,7 @@ export async function GET(request: Request) {
       const hoursUntilDue = (dueDate - now) / (1000 * 60 * 60);
 
       // Check if it falls precisely in one of our thresholds
-      // Vercel cron runs hourly, so we check if it's within the current hour bracket
+      // The cron runs hourly, so we check if it's within the current hour bracket
       for (const threshold of notificationThresholdsHours) {
         if (hoursUntilDue > threshold - 1 && hoursUntilDue <= threshold) {
           remindersToPush.push({ reminder: r, threshold });
